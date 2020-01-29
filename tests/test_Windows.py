@@ -5,7 +5,7 @@ import sys
 import pytest
 
 from keyrings.alt import Windows
-from keyring.tests.test_backend import BackendBasicTests
+from .backend import BackendFileTests
 from .test_file import FileKeyringTests
 
 
@@ -17,16 +17,16 @@ def is_win32_crypto_supported():
     return sys.platform in ['win32'] and sys.getwindowsversion()[-2] == 2
 
 
-@pytest.mark.skipif(not is_win32_crypto_supported(), "Need Windows")
-class Win32CryptoKeyringTestCase(FileKeyringTests):
+@pytest.mark.skipif(not is_win32_crypto_supported(), reason="Need Windows")
+class TestWin32CryptoKeyring(FileKeyringTests):
     def init_keyring(self):
         return Windows.EncryptedKeyring()
 
 
 @pytest.mark.skipif(
     not Windows.RegistryKeyring.viable or sys.version_info < (3,),
-    "RegistryKeyring not viable",
+    reason="RegistryKeyring not viable",
 )
-class RegistryKeyringTestCase(BackendBasicTests):
+class TestRegistryKeyring(BackendFileTests):
     def init_keyring(self):
         return Windows.RegistryKeyring()
